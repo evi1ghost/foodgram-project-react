@@ -11,3 +11,18 @@ class User(AbstractUser):
 
     def __str__(self):
         return f'{self.last_name} {self.first_name}'
+
+
+class Follow(models.Model):
+    subscriber = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='subscribtions',
+        verbose_name='Подписки'
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='subscribers',
+        verbose_name='Подписчики'
+    )

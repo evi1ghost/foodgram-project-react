@@ -28,11 +28,12 @@ DJANGO_APPS = [
     'django.contrib.staticfiles',
 ]
 THIRD_PARTY_APPS = [
-    "rest_framework",
+    'rest_framework',
 ]
 LOCAL_APPS = [
-    "apps.users",
-    "apps.recipes",
+    'apps.users',
+    'apps.recipes',
+    'apps.carts',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
