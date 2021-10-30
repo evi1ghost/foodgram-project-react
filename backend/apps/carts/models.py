@@ -18,3 +18,10 @@ class Cart(models.Model):
         related_name='carts',
         verbose_name='Рецепты'
     )
+
+    class Meta:
+        verbose_name = 'Список покупок'
+        verbose_name_plural = 'Списки покупок'
+
+    def __str__(self) -> str:
+        return self.user.username
