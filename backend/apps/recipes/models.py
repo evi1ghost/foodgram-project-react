@@ -79,7 +79,7 @@ class Recipe(models.Model):
         return self.name
 
 
-class Ingridient(models.Model):
+class Ingredient(models.Model):
     name = models.CharField(
         max_length=200,
         verbose_name='Наименование'
@@ -97,9 +97,9 @@ class Ingridient(models.Model):
         return self.name
 
 
-class IngridientAmount(models.Model):
-    ingridient = models.ForeignKey(
-        Ingridient,
+class IngredientAmount(models.Model):
+    ingredient = models.ForeignKey(
+        Ingredient,
         on_delete=models.CASCADE,
         related_name='ingridient_amount',
         verbose_name='Ингридиент'
