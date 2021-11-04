@@ -16,7 +16,7 @@ class Tag(models.Model):
             'Enter valid hex color number'
         )
     )
-    hexcolor = models.CharField(
+    color = models.CharField(
         max_length=7,
         unique=True,
         validators=[hexcolor_regex],
