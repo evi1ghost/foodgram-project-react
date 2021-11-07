@@ -1,6 +1,7 @@
 from .auth import CustomAuthTokenSerializer
 from .users import (
     SetPasswordSerializer,
+    UserRecipeSerializer,
     UserSerializer,
     UserSubscriptionSerializer,
 )
@@ -9,6 +10,7 @@ from .users import (
 __all__ = [
     CustomAuthTokenSerializer,
     SetPasswordSerializer,
+    UserRecipeSerializer,
     UserSerializer,
     UserSubscriptionSerializer,
 ]
