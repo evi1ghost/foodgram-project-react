@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
+from apps.recipes.models import Recipe
+
 User = get_user_model()
 
 
@@ -36,3 +38,32 @@ class SetPasswordSerializer(serializers.Serializer):
         write_only=True,
     )
     current_password = serializers.CharField(write_only=True)
+
+
+class UserRecipeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = ['id', 'name', 'image', 'cooking_time']
+        read_only_fields = ['name', 'image', 'cooking_time']
+
+
+class UserSubscriptionSerializer(UserSerializer):
+    recipes = UserRecipeSerializer(many=True)
+
+    def get_is_subscribed(self, obj):
+        return True
+
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'email',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'password',
+            'recipes',
+        ]
+        read_only_fields = ['is_subscribed']
+        extra_kwargs = {'password': {'write_only': True}}
