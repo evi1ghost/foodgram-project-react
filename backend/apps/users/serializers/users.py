@@ -49,6 +49,10 @@ class UserRecipeSerializer(serializers.ModelSerializer):
 
 class UserSubscriptionSerializer(UserSerializer):
     recipes = UserRecipeSerializer(many=True)
+    recipes_count = serializers.SerializerMethodField()
+
+    def get_recipes_count(self, obj):
+        return obj.recipes.all().count()
 
     def get_is_subscribed(self, obj):
         return True
@@ -64,6 +68,7 @@ class UserSubscriptionSerializer(UserSerializer):
             'is_subscribed',
             'password',
             'recipes',
+            'recipes_count'
         ]
         read_only_fields = ['is_subscribed']
         extra_kwargs = {'password': {'write_only': True}}

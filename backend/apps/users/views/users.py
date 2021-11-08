@@ -66,17 +66,29 @@ class UserViewSet(viewsets.ModelViewSet):
         detail=False,
         methods=['get', 'delete'],
         url_path=r'(?P<id>[\d]+)/subscribe',
-        url_name="subscribe",
+        url_name='subscribe',
         pagination_class=None,
+        permission_classes=[permissions.IsAuthenticated]
     )
     def subscribe(self, request, *args, **kwargs):
+        user = request.user
         author = get_object_or_404(User, id=kwargs['id'])
-        subscribtion, _ = Follow.objects.get_or_create(
-            subscriber=request.user,
+        subscribtion = Follow.objects.filter(
+            subscriber=user,
             author=author
         )
-        if request.method == 'DELETE':
+        if (
+            request.method == 'GET'
+            and not subscribtion
+            and user != author
+        ):
+            Follow.objects.create(
+                subscriber=user,
+                author=author
+            )
+            serializer = UserSubscriptionSerializer(author)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if request.method == 'DELETE' and subscribtion:
             subscribtion.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        serializer = UserSubscriptionSerializer(author)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)

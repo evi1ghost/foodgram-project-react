@@ -33,6 +33,12 @@ class Follow(models.Model):
     )
 
     class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=~models.Q(subscriber=models.F('author')),
+                name='subscriber_is_not_author'
+            )
+        ]
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
 

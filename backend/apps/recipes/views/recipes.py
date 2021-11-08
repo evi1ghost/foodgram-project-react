@@ -26,7 +26,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         detail=False,
         methods=['get', 'delete'],
         url_path=r'(?P<id>[\d]+)/favorite',
-        url_name="favorite",
+        url_name='favorite',
         pagination_class=None,
         permission_classes=[permissions.IsAuthenticated]
     )
@@ -38,7 +38,28 @@ class RecipeViewSet(viewsets.ModelViewSet):
             recipe.who_likes_it.add(user)
             serializer = UserRecipeSerializer(recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        if like:
+        if request.method == 'DELETE' and like:
             recipe.who_likes_it.remove(user)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @action(
+        detail=False,
+        methods=['get', 'delete'],
+        url_path=r'(?P<id>[\d]+)/shopping_cart',
+        url_name='shopping_cart',
+        pagination_class=None,
+        permission_classes=[permissions.IsAuthenticated]
+    )
+    def shopping_cart(self, request, *args, **kwargs):
+        user = request.user
+        recipe = get_object_or_404(Recipe, id=kwargs['id'])
+        is_added = User.objects.filter(id=user.id, cart__recipes=recipe)
+        if request.method == 'GET' and not is_added:
+            user.cart.recipes.add(recipe)
+            serializer = UserRecipeSerializer(recipe)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if request.method == 'DELETE' and is_added:
+            user.cart.recipes.remove(recipe)
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_400_BAD_REQUEST)

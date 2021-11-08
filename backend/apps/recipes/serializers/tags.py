@@ -4,7 +4,6 @@ from apps.recipes.models import Tag
 
 
 class TagSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField()
 
     class Meta:
         model = Tag
