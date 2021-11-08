@@ -1,14 +1,13 @@
 from rest_framework import serializers
 from drf_extra_fields.fields import Base64ImageField
 
-from apps.recipes.models import IngredientAmount, Recipe, Tag
+from apps.recipes.models import IngredientAmount, Recipe
 from apps.users.serializers import UserSerializer
 from .tags import TagSerializer
 from .ingredients import IngredientsSerializer
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    tags = TagSerializer(many=True)
     author = UserSerializer(read_only=True)
     ingredients = IngredientsSerializer(many=True)
     is_favorited = serializers.SerializerMethodField()
@@ -31,16 +30,16 @@ class RecipeSerializer(serializers.ModelSerializer):
             return True
         return False
 
-    def create(self, validated_data):
-        tags_from_request = validated_data.pop('tags')
-        ingredients_from_request = validated_data.pop('ingredients')
+    def to_representation(self, instance):
+        self.fields['tags'] = TagSerializer(many=True)
+        return super().to_representation(instance)
 
-        tag_ids = [tag['id'] for tag in tags_from_request]
-        tags = Tag.objects.filter(id__in=tag_ids)
+    def create(self, validated_data):
+        tags = validated_data.pop('tags')
+        ingredients_from_request = validated_data.pop('ingredients')
 
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.add(*tags)
-
         for ingredient in ingredients_from_request:
             IngredientAmount.objects.create(
                 ingredient_id=ingredient['id'],
