@@ -28,6 +28,7 @@ class Tag(models.Model):
     )
 
     class Meta:
+        ordering = ['name']
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
 
@@ -36,6 +37,10 @@ class Tag(models.Model):
 
 
 class Recipe(models.Model):
+    pub_date = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Дата публикации'
+    )
     name = models.CharField(
         max_length=200,
         verbose_name='Название'
@@ -72,6 +77,7 @@ class Recipe(models.Model):
     )
 
     class Meta:
+        ordering = ['-pub_date']
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 
@@ -90,6 +96,7 @@ class Ingredient(models.Model):
     )
 
     class Meta:
+        ordering = ['name']
         verbose_name = 'Ингридиент'
         verbose_name_plural = 'Ингридиенты'
 
@@ -121,6 +128,12 @@ class IngredientAmount(models.Model):
     )
 
     class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=~models.Q(ingredient=models.F('recipe')),
+                name='unique_ingredient_in_recipe'
+            )
+        ]
         verbose_name = 'Количество ингридиента'
         verbose_name_plural = 'Количество ингридиентов'
 

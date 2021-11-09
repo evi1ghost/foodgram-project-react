@@ -11,6 +11,7 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
 
     class Meta:
+        ordering = ['last_name']
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
@@ -22,7 +23,7 @@ class Follow(models.Model):
     subscriber = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='subscribtions',
+        related_name='subscriptions',
         verbose_name='Подписки'
     )
     author = models.ForeignKey(

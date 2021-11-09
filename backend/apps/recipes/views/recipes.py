@@ -14,7 +14,9 @@ User = get_user_model()
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    queryset = Recipe.objects.all()
+    queryset = Recipe.objects.select_related('author').prefetch_related(
+        'ingredients'
+    ).all()
     serializer_class = RecipeSerializer
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly,
@@ -43,7 +45,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if request.method == 'DELETE' and like:
             recipe.who_likes_it.remove(user)
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {'details': 'Действие уже выполнено'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     @action(
         detail=False,
@@ -64,7 +69,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if request.method == 'DELETE' and is_added:
             user.cart.recipes.remove(recipe)
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {'details': 'Действие уже выполнено'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     @action(
         detail=False,

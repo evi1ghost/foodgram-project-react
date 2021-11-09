@@ -91,4 +91,7 @@ class UserViewSet(viewsets.ModelViewSet):
         if request.method == 'DELETE' and subscribtion:
             subscribtion.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {'details': 'Действие уже выполнено'},
+            status=status.HTTP_400_BAD_REQUEST
+        )

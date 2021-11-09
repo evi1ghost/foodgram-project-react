@@ -13,8 +13,8 @@ class UserSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         if not user.is_authenticated:
             return False
-        subscribtions = user.subscribtions.filter(author=obj).exists()
-        return subscribtions
+        subscriptions = user.subscriptions.filter(author=obj).exists()
+        return subscriptions
 
     class Meta:
         model = User

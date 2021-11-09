@@ -5,6 +5,6 @@ from apps.recipes.serializers import IngredientsSerializer
 
 
 class IngredientReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = IngredientAmount.objects.all()
+    queryset = IngredientAmount.objects.select_related('ingredient').all()
     serializer_class = IngredientsSerializer
     pagination_class = None

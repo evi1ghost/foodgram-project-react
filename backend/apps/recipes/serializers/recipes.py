@@ -34,6 +34,15 @@ class RecipeSerializer(serializers.ModelSerializer):
         self.fields['tags'] = TagSerializer(many=True)
         return super().to_representation(instance)
 
+    def validate(self, data):
+        ingredients = data['ingredients']
+        for ingredient in ingredients:
+            if ingredients.count(ingredient) > 1:
+                raise serializers.ValidationError(
+                    'Ingredients should be unique'
+                )
+        return data
+
     def create(self, validated_data):
         tags = validated_data.pop('tags')
         ingredients_from_request = validated_data.pop('ingredients')
