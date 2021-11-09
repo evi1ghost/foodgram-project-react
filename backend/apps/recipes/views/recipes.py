@@ -1,15 +1,17 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from rest_framework import status, permissions, viewsets
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from apps.carts.utilities import generate_pdf_response, generate_shopping_list
 from apps.recipes.models import Recipe
-from apps.recipes.serializers import RecipeSerializer
 from apps.recipes.permissions import IsAuthorOrReadOnly
+from apps.recipes.serializers import RecipeSerializer
 from apps.users.serializers import UserRecipeSerializer
 
 User = get_user_model()
+
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
@@ -63,3 +65,16 @@ class RecipeViewSet(viewsets.ModelViewSet):
             user.cart.recipes.remove(recipe)
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @action(
+        detail=False,
+        methods=['get'],
+        url_path='download_shopping_cart',
+        url_name='download_shopping_cart',
+        pagination_class=None,
+        permission_classes=[permissions.IsAuthenticated]
+    )
+    def download_shopping_cart(self, request, *args, **kwargs):
+        user = request.user
+        shopping_list = generate_shopping_list(user)
+        return generate_pdf_response(shopping_list)
