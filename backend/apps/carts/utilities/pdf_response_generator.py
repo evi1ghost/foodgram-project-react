@@ -1,11 +1,18 @@
+from django.db.models import Sum
 from django.http import HttpResponse
-
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen.canvas import Canvas
 
+from apps.recipes.models import IngredientAmount
 
-def generate_pdf_response(shopping_list):
+
+def generate_pdf_shopping_list(user):
+    shopping_list = IngredientAmount.objects.filter(
+        recipe__carts__user=user).values(
+            'ingredient__name',
+            'ingredient__measurement_unit'
+        ).annotate(amount=Sum('amount')).order_by()
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = (
         'attachment; filename="shopping_list.pdf"'
@@ -19,10 +26,11 @@ def generate_pdf_response(shopping_list):
     page.setFont('DejaVuSerif', 16)
     height = 760
     is_page_done = False
-    for idx, (ingr, params) in enumerate(shopping_list.items(), start=1):
+    for idx, ingr in enumerate(shopping_list, start=1):
         is_page_done = False
         page.drawString(60, height, text=(
-            f'{idx}. {ingr} - {params[0]} {params[1]}'
+            f'{idx}. {ingr["ingredient__name"]} - {ingr["amount"]} '
+            f'{ingr["ingredient__measurement_unit"]}'
         ))
         height -= 30
         if height <= 40:

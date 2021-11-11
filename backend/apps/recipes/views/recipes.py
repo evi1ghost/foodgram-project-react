@@ -4,7 +4,7 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from apps.carts.utilities import generate_pdf_response, generate_shopping_list
+from apps.carts.utilities import generate_pdf_shopping_list
 from apps.recipes.models import Recipe
 from apps.recipes.permissions import IsAuthorOrReadOnly
 from apps.recipes.serializers import RecipeSerializer
@@ -34,7 +34,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         pagination_class=None,
         permission_classes=[permissions.IsAuthenticated]
     )
-    def subscribe(self, request, *args, **kwargs):
+    def subscribe(self, request, **kwargs):
         user = request.user
         recipe = get_object_or_404(Recipe, id=kwargs['id'])
         like = User.objects.filter(id=user.id, favourite_recipes=recipe)
@@ -58,7 +58,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         pagination_class=None,
         permission_classes=[permissions.IsAuthenticated]
     )
-    def shopping_cart(self, request, *args, **kwargs):
+    def shopping_cart(self, request, **kwargs):
         user = request.user
         recipe = get_object_or_404(Recipe, id=kwargs['id'])
         is_added = User.objects.filter(id=user.id, cart__recipes=recipe)
@@ -82,7 +82,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         pagination_class=None,
         permission_classes=[permissions.IsAuthenticated]
     )
-    def download_shopping_cart(self, request, *args, **kwargs):
+    def download_shopping_cart(self, request):
         user = request.user
-        shopping_list = generate_shopping_list(user)
-        return generate_pdf_response(shopping_list)
+        return generate_pdf_shopping_list(user)
