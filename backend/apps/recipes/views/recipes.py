@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from apps.carts.utilities import generate_pdf_shopping_list
+from apps.recipes.filters import RecipeFilter
 from apps.recipes.models import Recipe
 from apps.recipes.permissions import IsAuthorOrReadOnly
 from apps.recipes.serializers import RecipeSerializer
@@ -22,8 +23,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permissions.IsAuthenticatedOrReadOnly,
         IsAuthorOrReadOnly,
     ]
+    filterset_class = RecipeFilter
+
+    def update(self, request, *args, **kwargs):
+        if request.method == 'PATCH':
+            return Response({'detail': 'Метод "PATCH" не разрешен.'})
+        return super().update(request, *args, **kwargs)
 
     def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+    def perform_update(self, serializer):
         serializer.save(author=self.request.user)
 
     @action(
@@ -46,7 +56,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             recipe.who_likes_it.remove(user)
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(
-            {'details': 'Действие уже выполнено'},
+            {'detail': 'Действие уже выполнено'},
             status=status.HTTP_400_BAD_REQUEST
         )
 
@@ -70,7 +80,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             user.cart.recipes.remove(recipe)
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(
-            {'details': 'Действие уже выполнено'},
+            {'detail': 'Действие уже выполнено'},
             status=status.HTTP_400_BAD_REQUEST
         )
 

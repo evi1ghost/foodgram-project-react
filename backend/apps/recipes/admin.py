@@ -66,6 +66,14 @@ class LikesInline(admin.TabularInline):
     verbose_name_plural = 'Добавили в избранное'
 
 
+class IngredientAmountInline(admin.TabularInline):
+    model = IngredientAmount
+    fk_name = 'recipe'
+    extra = 1
+    verbose_name = 'Ингридиент'
+    verbose_name_plural = 'Ингридиенты'
+
+
 class RecipeAdmin(admin.ModelAdmin):
     list_display = [
         'pk',
@@ -76,10 +84,12 @@ class RecipeAdmin(admin.ModelAdmin):
         'author',
     ]
     exclude = [
+        'ingredients',
         'tags',
         'who_likes_it',
     ]
     inlines = [
+        IngredientAmountInline,
         TagInline,
         LikesInline,
     ]

@@ -27,7 +27,6 @@ class UserSerializer(serializers.ModelSerializer):
             'is_subscribed',
             'password',
         ]
-        read_only_fields = ['is_subscribed']
         extra_kwargs = {'password': {'write_only': True}}
 
 
@@ -48,14 +47,20 @@ class UserRecipeSerializer(serializers.ModelSerializer):
 
 
 class UserSubscriptionSerializer(UserSerializer):
-    recipes = UserRecipeSerializer(many=True)
+    recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
+
+    def get_recipes(self, obj):
+        recipes_limit = self.context[
+            'request'].query_params.get('recipes_limit')
+        if recipes_limit and recipes_limit.isdigit():
+            recipes_limit = int(recipes_limit)
+        queryset = obj.recipes.all()[:recipes_limit]
+        serializer = UserRecipeSerializer(queryset, many=True)
+        return serializer.data
 
     def get_recipes_count(self, obj):
         return obj.recipes.all().count()
-
-    def get_is_subscribed(self, obj):
-        return True
 
     class Meta:
         model = User
@@ -70,5 +75,4 @@ class UserSubscriptionSerializer(UserSerializer):
             'recipes',
             'recipes_count'
         ]
-        read_only_fields = ['is_subscribed']
         extra_kwargs = {'password': {'write_only': True}}

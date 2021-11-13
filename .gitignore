@@ -136,3 +136,7 @@ dmypy.json
 
 # sqlite
 .sqlite3
+
+# static and media files
+static/
+media/

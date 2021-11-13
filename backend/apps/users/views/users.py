@@ -23,7 +23,7 @@ class UserViewSet(viewsets.ModelViewSet):
         permission_classes=[permissions.IsAuthenticated],
     )
     def me(self, request, *args, **kwargs):
-        user = self.request.user
+        user = request.user
         serializer = self.get_serializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -35,7 +35,7 @@ class UserViewSet(viewsets.ModelViewSet):
         permission_classes=[permissions.IsAuthenticated],
     )
     def set_password(self, request, *args, **kwargs):
-        user = self.request.user
+        user = request.user
         serializer = SetPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         if user.check_password(
@@ -57,9 +57,13 @@ class UserViewSet(viewsets.ModelViewSet):
         permission_classes=[permissions.IsAuthenticated],
     )
     def subscription(self, request, *args, **kwargs):
-        user = self.request.user
+        user = request.user
         queryset = User.objects.filter(subscribers__subscriber=user)
-        serializer = UserSubscriptionSerializer(queryset, many=True)
+        serializer = UserSubscriptionSerializer(
+            queryset,
+            context={'request': request},
+            many=True
+        )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(
@@ -92,6 +96,6 @@ class UserViewSet(viewsets.ModelViewSet):
             subscribtion.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(
-            {'details': 'Действие уже выполнено'},
+            {'detail': 'Действие уже выполнено'},
             status=status.HTTP_400_BAD_REQUEST
         )
