@@ -14,7 +14,7 @@ SECRET_KEY = env(
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'web']
+ALLOWED_HOSTS = ['127.0.0.1', 'web', '51.250.3.162']
 
 
 # Application definition
