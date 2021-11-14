@@ -128,12 +128,6 @@ class IngredientAmount(models.Model):
     )
 
     class Meta:
-        constraints = [
-            models.CheckConstraint(
-                check=~models.Q(ingredient=models.F('recipe')),
-                name='unique_ingredient_in_recipe'
-            )
-        ]
         verbose_name = 'Количество ингридиента'
         verbose_name_plural = 'Количество ингридиентов'
 

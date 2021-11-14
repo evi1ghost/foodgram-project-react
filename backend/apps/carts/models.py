@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models.signals import post_save
 
 from apps.recipes.models import Recipe
 
@@ -25,3 +26,10 @@ class Cart(models.Model):
 
     def __str__(self) -> str:
         return self.user.username
+
+
+def create_cart(sender, instance, **kwargs):
+    Cart.objects.create(user=instance)
+
+
+post_save.connect(create_cart, sender=User)

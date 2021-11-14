@@ -37,11 +37,16 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         ingredients = data['ingredients']
-        for ingredient in ingredients:
-            if ingredients.count(ingredient) > 1:
-                raise serializers.ValidationError(
-                    'Ingredients should be unique'
+        ingr_ids = {}
+        for i in range(len(ingredients)):
+            id = ingredients[i]['id']
+            if id not in ingr_ids:
+                ingr_ids[id] = i
+            else:
+                ingredients[ingr_ids[id]]['amount'] += (
+                    ingredients[i]['amount']
                 )
+                ingredients.pop(i)
         return data
 
     def create(self, validated_data):
