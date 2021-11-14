@@ -7,3 +7,4 @@ from apps.recipes.serializers import TagSerializer
 class TagRetrieveViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    pagination_class = None

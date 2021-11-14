@@ -34,4 +34,4 @@ class DestroyTokenAPIView(views.APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
         token.delete()
-        return Response(status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_204_NO_CONTENT)
