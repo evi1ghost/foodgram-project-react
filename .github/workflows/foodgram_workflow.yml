@@ -60,9 +60,7 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         script: |
             cd foodgram-project-react/
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO_NAME }}
-            sudo docker-compose stop
-            sudo docker-compose rm web
+            rm .env
             touch .env
             echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
@@ -71,6 +69,10 @@ jobs:
             echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
             echo POSTGRES_HOST=${{ secrets.POSTGRES_HOST }} >> .env
             echo POSTGRES_PORT=${{ secrets.POSTGRES_PORT }} >> .env
+            cd infra/
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO_NAME }}
+            sudo docker-compose stop
+            sudo docker-compose rm web
             sudo docker-compose up -d
   send_message:
     runs-on: ubuntu-latest
