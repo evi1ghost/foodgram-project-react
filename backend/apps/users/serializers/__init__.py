@@ -1,11 +1,6 @@
 from .auth import CustomAuthTokenSerializer
-from .users import (
-    SetPasswordSerializer,
-    UserRecipeSerializer,
-    UserSerializer,
-    UserSubscriptionSerializer,
-)
-
+from .users import (SetPasswordSerializer, UserRecipeSerializer,
+                    UserSerializer, UserSubscriptionSerializer)
 
 __all__ = [
     CustomAuthTokenSerializer,

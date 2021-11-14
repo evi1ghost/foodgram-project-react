@@ -2,12 +2,11 @@ import json
 
 
 def add_parametrs(ingredient, id):
-    fixture = {
+    return {
         "model": "recipes.ingredient",
         "pk": id,
         "fields": ingredient
     }
-    return fixture
 
 
 def create_fixtures():

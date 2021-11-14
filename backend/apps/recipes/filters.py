@@ -1,6 +1,7 @@
 
 from django.contrib.auth import get_user_model
-from django_filters import FilterSet as FS, CharFilter
+from django_filters import CharFilter
+from django_filters import FilterSet as DefaultFilterSet
 from django_filters.rest_framework import FilterSet, filters
 
 from apps.recipes.models import Recipe
@@ -29,7 +30,7 @@ class RecipeFilter(FilterSet):
         fields = ['author', 'tags']
 
 
-class IngredientFilter(FS):
+class IngredientFilter(DefaultFilterSet):
     name = CharFilter(
         field_name='ingredient__name', lookup_expr='startswith'
     )

@@ -12,7 +12,7 @@ def generate_pdf_shopping_list(user):
         recipe__carts__user=user).values(
             'ingredient__name',
             'ingredient__measurement_unit'
-        ).annotate(amount=Sum('amount')).order_by()
+    ).annotate(amount=Sum('amount')).order_by()
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = (
         'attachment; filename="shopping_list.pdf"'

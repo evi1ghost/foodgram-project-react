@@ -3,7 +3,6 @@ from rest_framework.routers import DefaultRouter
 
 from apps.users.views import CustomAuthToken, DestroyTokenAPIView, UserViewSet
 
-
 router = DefaultRouter()
 
 router.register('', UserViewSet, basename='users')
