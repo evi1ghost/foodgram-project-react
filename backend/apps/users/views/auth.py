@@ -10,6 +10,11 @@ from apps.users.serializers import CustomAuthTokenSerializer
 class CustomAuthToken(ObtainAuthToken):
     serializer_class = CustomAuthTokenSerializer
 
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        response.status_code = status.HTTP_201_CREATED
+        return response
+
 
 class DestroyTokenAPIView(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
