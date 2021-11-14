@@ -9,7 +9,7 @@ services:
       - ../.env
 
   web:
-    build: .
+    build: ../backend
     image: evi1ghost/foodgram:latest
     restart: always
     volumes:
