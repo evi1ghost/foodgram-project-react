@@ -1,11 +1,10 @@
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from apps.recipes.models import IngredientAmount, Recipe
-from apps.users.serializers import UserSerializer
-
 from .ingredients import IngredientAmountSerializer
 from .tags import TagSerializer
+from apps.recipes.models import IngredientAmount, Recipe
+from apps.users.serializers import UserSerializer
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -16,18 +15,18 @@ class RecipeSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
 
     def get_is_favorited(self, obj):
-        user = self.context['request'].user
-        if not user.is_authenticated:
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
             return False
-        if user in obj.who_likes_it.all():
+        if obj.who_likes_it.filter(id=request.user.id).exists():
             return True
         return False
 
     def get_is_in_shopping_cart(self, obj):
-        user = self.context['request'].user
-        if not user.is_authenticated:
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
             return False
-        if obj in user.cart.recipes.all():
+        if obj.carts.filter(user=request.user).exists():
             return True
         return False
 

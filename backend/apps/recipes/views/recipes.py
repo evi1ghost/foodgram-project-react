@@ -39,10 +39,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
         pagination_class=None,
         permission_classes=[permissions.IsAuthenticated]
     )
-    def subscribe(self, request, **kwargs):
+    def favorite(self, request, **kwargs):
         user = request.user
         recipe = get_object_or_404(Recipe, id=kwargs['id'])
-        like = User.objects.filter(id=user.id, favourite_recipes=recipe)
+        like = User.objects.filter(
+            id=user.id,
+            favourite_recipes=recipe
+        ).exists()
         if request.method == 'GET' and not like:
             recipe.who_likes_it.add(user)
             serializer = UserRecipeSerializer(recipe)
@@ -66,7 +69,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def shopping_cart(self, request, **kwargs):
         user = request.user
         recipe = get_object_or_404(Recipe, id=kwargs['id'])
-        is_added = User.objects.filter(id=user.id, cart__recipes=recipe)
+        is_added = User.objects.filter(
+            id=user.id,
+            cart__recipes=recipe
+        ).exists()
         if request.method == 'GET' and not is_added:
             user.cart.recipes.add(recipe)
             serializer = UserRecipeSerializer(recipe)

@@ -4,7 +4,7 @@ from apps.recipes.models import Ingredient, IngredientAmount
 
 
 class IngredientAmountSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField()
+    id = serializers.IntegerField(source='ingredient.id')
     name = serializers.SlugRelatedField(
         source='ingredient',
         slug_field='name',
