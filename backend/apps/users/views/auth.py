@@ -1,4 +1,3 @@
-from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import permissions, status, views
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
