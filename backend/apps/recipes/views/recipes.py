@@ -25,11 +25,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     ]
     filterset_class = RecipeFilter
 
-    def update(self, request, *args, **kwargs):
-        if request.method == 'PATCH':
-            return Response({'detail': 'Метод "PATCH" не разрешен.'})
-        return super().update(request, *args, **kwargs)
-
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
