@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
@@ -36,16 +37,40 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         ingredients = data['ingredients']
-        ingr_ids = {}
-        for i in range(len(ingredients)):
-            id = ingredients[i]['id']
-            if id not in ingr_ids:
-                ingr_ids[id] = i
-            else:
-                ingredients[ingr_ids[id]]['amount'] += (
-                    ingredients[i]['amount']
+        existing_ingredients = {}
+        for ingredient in ingredients:
+            if ingredient['amount'] <= 0:
+                raise ValidationError(
+                    'Количество ингридиента должно быть больше нуля'
                 )
-                ingredients.pop(i)
+            if (
+                instance := ingredient['ingredient']
+            ) not in existing_ingredients:
+                existing_ingredients[instance] = True
+            else:
+                raise ValidationError(
+                    'Ингридиенты не должны повторяться'
+                )
+        if data['cooking_time'] <= 0:
+            raise ValidationError(
+                'Время готовки должно быть больше нуля'
+            )
+        # Валидировать теги на предмет дублей не визу смысла
+        # т.к. при добавлении в m2m через set() все дубли сами отвалятся
+
+        # valid_ingredient = {}
+        # invalid_ingredient_idx = []
+        # for idx in range(len(ingredients)):
+        #     ingredient = ingredients[idx]['ingredient']
+        #     amount = ingredients[idx]['amount']
+        #     if ingredient not in valid_ingredient:
+        #         valid_ingredient[ingredient] = idx
+        #     else:
+        #         origin_ingr_idx = valid_ingredient[ingredient]
+        #         ingredients[origin_ingr_idx]['amount'] += amount
+        #         invalid_ingredient_idx.append(idx)
+        # if invalid_ingredient_idx:
+        #     [ingredients.pop(idx) for idx in invalid_ingredient_idx[::-1]]
         return data
 
     def create(self, validated_data):
@@ -71,7 +96,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         IngredientAmount.objects.filter(recipe=instance).delete()
         for ingredient in ingredients_from_request:
             IngredientAmount.objects.get_or_create(
-                ingredient_id=ingredient['id'],
+                ingredient=ingredient['ingredient'],
                 amount=ingredient['amount'],
                 recipe=instance
             )
