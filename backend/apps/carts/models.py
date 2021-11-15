@@ -29,7 +29,7 @@ class Cart(models.Model):
 
 
 def create_cart(sender, instance, **kwargs):
-    Cart.objects.create(user=instance)
+    Cart.objects.get_or_create(user=instance)
 
 
 post_save.connect(create_cart, sender=User)
