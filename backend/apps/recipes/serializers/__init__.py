@@ -1,4 +1,4 @@
-from .ingredients import IngredientSerializer, IngredientAmountSerializer
+from .ingredients import IngredientAmountSerializer, IngredientSerializer
 from .recipes import RecipeSerializer
 from .tags import TagSerializer
 
