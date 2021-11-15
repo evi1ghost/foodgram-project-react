@@ -1,9 +1,9 @@
 from rest_framework import serializers
 
-from apps.recipes.models import IngredientAmount
+from apps.recipes.models import Ingredient, IngredientAmount
 
 
-class IngredientsSerializer(serializers.ModelSerializer):
+class IngredientAmountSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
     name = serializers.SlugRelatedField(
         source='ingredient',
@@ -19,3 +19,9 @@ class IngredientsSerializer(serializers.ModelSerializer):
     class Meta:
         model = IngredientAmount
         fields = ['id', 'name', 'measurement_unit', 'amount']
+
+
+class IngredientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ingredient
+        fields = ['id', 'name', 'measurement_unit']

@@ -4,13 +4,13 @@ from rest_framework import serializers
 from apps.recipes.models import IngredientAmount, Recipe
 from apps.users.serializers import UserSerializer
 
-from .ingredients import IngredientsSerializer
+from .ingredients import IngredientAmountSerializer
 from .tags import TagSerializer
 
 
 class RecipeSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
-    ingredients = IngredientsSerializer(many=True)
+    ingredients = IngredientAmountSerializer(many=True)
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
     image = Base64ImageField()

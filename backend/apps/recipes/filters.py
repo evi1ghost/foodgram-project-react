@@ -32,5 +32,5 @@ class RecipeFilter(FilterSet):
 
 class IngredientFilter(DefaultFilterSet):
     name = CharFilter(
-        field_name='ingredient__name', lookup_expr='startswith'
+        field_name='name', lookup_expr='startswith'
     )
