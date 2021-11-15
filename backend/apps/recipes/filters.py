@@ -1,4 +1,3 @@
-
 from django.contrib.auth import get_user_model
 from django_filters import CharFilter
 from django_filters import FilterSet as DefaultFilterSet

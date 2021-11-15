@@ -10,7 +10,10 @@ class UserSerializer(serializers.ModelSerializer):
     is_subscribed = serializers.SerializerMethodField()
 
     def get_is_subscribed(self, obj):
-        user = self.context['request'].user
+        request = self.context.get('request')
+        if not request:
+            return False
+        user = request.user
         if not user.is_authenticated:
             return False
         return user.subscriptions.filter(author=obj).exists()
@@ -61,8 +64,10 @@ class UserSubscriptionSerializer(UserSerializer):
     recipes_count = serializers.SerializerMethodField()
 
     def get_recipes(self, obj):
-        recipes_limit = self.context[
-            'request'].query_params.get('recipes_limit')
+        recipes_limit = None
+        request = self.context.get('request')
+        if request:
+            recipes_limit = request.query_params.get('recipes_limit')
         if recipes_limit and recipes_limit.isdigit():
             recipes_limit = int(recipes_limit)
         queryset = obj.recipes.all()[:recipes_limit]

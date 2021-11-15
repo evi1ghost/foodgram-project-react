@@ -66,12 +66,6 @@ class UserViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-        # serializer = UserSubscriptionSerializer(
-        #     page,
-        #     context={'request': request},
-        #     many=True
-        # )
-        # return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(
         detail=False,
@@ -84,13 +78,15 @@ class UserViewSet(viewsets.ModelViewSet):
     def subscribe(self, request, *args, **kwargs):
         user = request.user
         author = get_object_or_404(User, id=kwargs['id'])
-        subscribtion = Follow.objects.filter(
+        subscription = Follow.objects.filter(
             subscriber=user,
             author=author
         )
+        # exists не использую, т.к. в случае DELETE-запроса использую
+        # subscription.delete()
         if (
             request.method == 'GET'
-            and not subscribtion
+            and not subscription
             and user != author
         ):
             Follow.objects.create(
@@ -102,8 +98,8 @@ class UserViewSet(viewsets.ModelViewSet):
                 context={'request': request}
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        if request.method == 'DELETE' and subscribtion:
-            subscribtion.delete()
+        if request.method == 'DELETE' and subscription:
+            subscription.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(
             {'detail': 'Действие уже выполнено'},

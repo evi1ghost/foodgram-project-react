@@ -20,11 +20,6 @@ class CustomAuthToken(ObtainAuthToken):
             status=status.HTTP_201_CREATED
         )
 
-    # def post(self, request, *args, **kwargs):
-    #     response = super().post(request, *args, **kwargs)
-    #     response.status_code = status.HTTP_201_CREATED
-    #     return response
-
 
 class DestroyTokenAPIView(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -38,7 +33,7 @@ class DestroyTokenAPIView(views.APIView):
             )
         try:
             token = Token.objects.get(user=user)
-        except ObjectDoesNotExist:
+        except Token.DoesNotExist:
             Response(
                 {'detail': 'Token does not exist.'},
                 status=status.HTTP_404_NOT_FOUND,

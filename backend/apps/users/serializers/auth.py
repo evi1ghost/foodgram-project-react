@@ -1,21 +1,20 @@
 from django.contrib.auth import authenticate
-from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 
 class CustomAuthTokenSerializer(serializers.Serializer):
     email = serializers.EmailField(
-        label=_("Email"),
+        label="Email",
         write_only=True
     )
     password = serializers.CharField(
-        label=_("Password"),
+        label="Password",
         style={'input_type': 'password'},
         trim_whitespace=False,
         write_only=True
     )
     token = serializers.CharField(
-        label=_("Token"),
+        label="Token",
         read_only=True
     )
 
@@ -27,10 +26,10 @@ class CustomAuthTokenSerializer(serializers.Serializer):
             user = authenticate(request=self.context.get('request'),
                                 email=email, password=password)
             if not user:
-                msg = _('Unable to log in with provided credentials.')
+                msg = 'Unable to log in with provided credentials.'
                 raise serializers.ValidationError(msg, code='authorization')
         else:
-            msg = _('Must include "email" and "password".')
+            msg = 'Must include "email" and "password".'
             raise serializers.ValidationError(msg, code='authorization')
 
         attrs['user'] = user

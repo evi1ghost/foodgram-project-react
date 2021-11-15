@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
+from django.db.models.constraints import UniqueConstraint
 
 User = get_user_model()
 
@@ -128,6 +129,12 @@ class IngredientAmount(models.Model):
     )
 
     class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=['ingredient', 'recipe'],
+                name='unique_ingredient'
+            )
+        ]
         verbose_name = 'Количество ингридиента'
         verbose_name_plural = 'Количество ингридиентов'
 
