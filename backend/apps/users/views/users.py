@@ -3,6 +3,7 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from apps.core.pagination import PageNumberAndLimitPagination
 from apps.users.models import Follow, User
 from apps.users.serializers import (SetPasswordSerializer, UserSerializer,
                                     UserSubscriptionSerializer)
@@ -51,17 +52,26 @@ class UserViewSet(viewsets.ModelViewSet):
         detail=False,
         url_path='subscriptions',
         url_name='subscriptions',
+        serializer_class=UserSubscriptionSerializer,
         permission_classes=[permissions.IsAuthenticated],
+        pagination_class=PageNumberAndLimitPagination
     )
     def subscription(self, request, *args, **kwargs):
         user = request.user
         queryset = User.objects.filter(subscribers__subscriber=user)
-        serializer = UserSubscriptionSerializer(
-            queryset,
-            context={'request': request},
-            many=True
-        )
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+        # serializer = UserSubscriptionSerializer(
+        #     page,
+        #     context={'request': request},
+        #     many=True
+        # )
+        # return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(
         detail=False,
@@ -87,7 +97,10 @@ class UserViewSet(viewsets.ModelViewSet):
                 subscriber=user,
                 author=author
             )
-            serializer = UserSubscriptionSerializer(author)
+            serializer = UserSubscriptionSerializer(
+                author,
+                context={'request': request}
+            )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         if request.method == 'DELETE' and subscribtion:
             subscribtion.delete()
