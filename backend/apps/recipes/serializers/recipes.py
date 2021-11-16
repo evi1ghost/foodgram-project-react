@@ -55,51 +55,37 @@ class RecipeSerializer(serializers.ModelSerializer):
             raise ValidationError(
                 'Время готовки должно быть больше нуля'
             )
-        # Валидировать теги на предмет дублей не визу смысла
-        # т.к. при добавлении в m2m через set() все дубли сами отвалятся
-
-        # valid_ingredient = {}
-        # invalid_ingredient_idx = []
-        # for idx in range(len(ingredients)):
-        #     ingredient = ingredients[idx]['ingredient']
-        #     amount = ingredients[idx]['amount']
-        #     if ingredient not in valid_ingredient:
-        #         valid_ingredient[ingredient] = idx
-        #     else:
-        #         origin_ingr_idx = valid_ingredient[ingredient]
-        #         ingredients[origin_ingr_idx]['amount'] += amount
-        #         invalid_ingredient_idx.append(idx)
-        # if invalid_ingredient_idx:
-        #     [ingredients.pop(idx) for idx in invalid_ingredient_idx[::-1]]
         return data
 
-    def create(self, validated_data):
-        tags = validated_data.pop('tags')
-        ingredients_from_request = validated_data.pop('ingredients')
-
-        recipe = Recipe.objects.create(**validated_data)
-        recipe.tags.add(*tags)
-        for ingredient in ingredients_from_request:
-            IngredientAmount.objects.create(
-                ingredient_id=ingredient['id'],
-                amount=ingredient['amount'],
-                recipe=recipe
-            )
-        return recipe
-
-    def update(self, instance, validated_data):
-        tags = validated_data.pop('tags')
-        ingredients_from_request = validated_data.pop('ingredients')
-        super().update(instance, validated_data)
-        instance.tags.clear()
-        instance.tags.add(*tags)
-        IngredientAmount.objects.filter(recipe=instance).delete()
-        for ingredient in ingredients_from_request:
+    @staticmethod
+    def add_ingredients(instance, ingredients):
+        for ingredient in ingredients:
             IngredientAmount.objects.get_or_create(
                 ingredient=ingredient['ingredient'],
                 amount=ingredient['amount'],
                 recipe=instance
             )
+
+    def create(self, validated_data):
+        if 'tags' in validated_data:
+            tags = validated_data.pop('tags')
+        if 'ingredients' in validated_data:
+            ingredients = validated_data.pop('ingredients')
+        recipe = Recipe.objects.create(**validated_data)
+        recipe.tags.add(*tags)
+        self.add_ingredients(recipe, ingredients)
+        return recipe
+
+    def update(self, instance, validated_data):
+        if 'tags' in validated_data:
+            tags = validated_data.pop('tags')
+            instance.tags.clear()
+            instance.tags.add(*tags)
+        if 'ingredients' in validated_data:
+            ingredients = validated_data.pop('ingredients')
+            IngredientAmount.objects.filter(recipe=instance).delete()
+            self.add_ingredients(instance, ingredients)
+        super().update(instance, validated_data)
         return instance
 
     class Meta:
