@@ -59,6 +59,7 @@ sudo docker-compose exec web bash loaddata.sh
 sudo docker-compose exec web python manage.py createsuperuser
 ```
 **Документация будет доступна по адресу: http://127.0.0.1/api/docs/**
+**Админ-панель: http://127.0.0.1/admin/**
 
 ### Использование CI/CD (GitHub Actions):
 В переменные окружения (Secrets) добавить секреты из файла .env, а также:
@@ -79,5 +80,8 @@ TELEGRAM_TOKEN=<токен Telegram-бота>
 
 ## Проект в сети:
 В настоящий момент проект доступен по [адресу](http://51.250.3.162/recipes)
+Учетные данные для админки:
+- email: admin@mail.ru
+- password: zxc-1234
 
 _Автор - Андрей Дубинчик: https://github.com/evi1ghost_
