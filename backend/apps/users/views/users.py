@@ -82,11 +82,9 @@ class UserViewSet(viewsets.ModelViewSet):
             subscriber=user,
             author=author
         )
-        # exists не использую, т.к. в случае DELETE-запроса использую
-        # subscription.delete()
         if (
             request.method == 'GET'
-            and not subscription
+            and not subscription.exist()
             and user != author
         ):
             Follow.objects.create(

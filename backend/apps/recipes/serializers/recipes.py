@@ -19,17 +19,13 @@ class RecipeSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if not request or not request.user.is_authenticated:
             return False
-        if obj.who_likes_it.filter(id=request.user.id).exists():
-            return True
-        return False
+        return obj.who_likes_it.filter(id=request.user.id).exists()
 
     def get_is_in_shopping_cart(self, obj):
         request = self.context.get('request')
         if not request or not request.user.is_authenticated:
             return False
-        if obj.carts.filter(user=request.user).exists():
-            return True
-        return False
+        return obj.carts.filter(user=request.user).exists()
 
     def to_representation(self, instance):
         self.fields['tags'] = TagSerializer(many=True)
