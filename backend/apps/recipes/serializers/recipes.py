@@ -32,6 +32,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         return super().to_representation(instance)
 
     def validate(self, data):
+        # ingredients validation
         ingredients = data['ingredients']
         existing_ingredients = {}
         for ingredient in ingredients:
@@ -47,10 +48,20 @@ class RecipeSerializer(serializers.ModelSerializer):
                 raise ValidationError(
                     'Ингридиенты не должны повторяться'
                 )
+        # cooking_time validation
         if data['cooking_time'] <= 0:
             raise ValidationError(
                 'Время готовки должно быть больше нуля'
             )
+        # tags validation
+        tags = data['tags']
+        existing_tags = {}
+        for tag in tags:
+            if tag in existing_tags:
+                raise ValidationError(
+                    'Посторяющиеся теги недопустимы'
+                )
+            existing_tags['tag'] = True
         return data
 
     @staticmethod
