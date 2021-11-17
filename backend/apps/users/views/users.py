@@ -84,7 +84,7 @@ class UserViewSet(viewsets.ModelViewSet):
         )
         if (
             request.method == 'GET'
-            and not subscription.exist()
+            and not subscription.exists()
             and user != author
         ):
             Follow.objects.create(
